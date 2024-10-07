@@ -1,0 +1,63 @@
+
+# AWS VPC Load Balancer Project
+
+## Project Overview
+
+This project demonstrates how to:
+- Create a VPC with public and private subnets across two availability zones.
+- Set up a Bastion host to securely access private EC2 instances.
+- Configure an Auto Scaling group for EC2 instances in the private subnet.
+- Deploy a simple web server using Python on EC2 instances and configure a **load balancer in the public subnet** to distribute traffic between the servers.
+
+**VPC Creation**
+- **Create a VPC**: 
+  - Go to the VPC service in AWS and create a new VPC with a CIDR block, for example, `10.0.0.0/16`.
+- **Create Subnets**:
+  - Create two public subnets and two private subnets, one in each availability zone:
+    - Public Subnet 1 
+    - Public Subnet 2 
+    - Private Subnet 1 
+    - Private Subnet 2
+
+
+
+**Bastion Host Setup**
+- **Launch Bastion Host**:
+  - Create an EC2 instance in one of the public subnets, and allow inbound SSH traffic from your IP.
+- **Security Groups**:
+  - Set up a security group that allows SSH access to the Bastion Host.
+
+**Auto Scaling Group in Private Subnet**
+- **Launch Private EC2 Instances**:
+  - Set up an Auto Scaling group to launch EC2 instances in the private subnets across both availability zones. 
+- **Deploy the Application**:
+  - SSH into the private EC2 instances through the Bastion Host:
+    ```bash
+    ssh -i your-key.pem ec2-user@<bastion-ip>
+    ssh -i your-key.pem ec2-user@<private-ec2-ip>
+    ```
+  - On the EC2 instance, run the Python HTTP server:
+    ```bash
+    cd /path/to/your/html
+    python3 -m http.server 8000
+    ```
+
+**Load Balancer in Public Subnet**
+- **Create a Load Balancer**:
+  - Set up an Application Load Balancer in the public subnet to distribute traffic between the EC2 instances in the private subnets.
+- **Target Group**:
+  - Create a target group for the EC2 instances in the private subnets.
+- **Security Groups**:
+  - Ensure the security group of the load balancer allows inbound HTTP traffic.
+  
+**Testing the Load Balancer**
+- Access the load balancer URL in your browser.
+- **Success**: The page loads correctly from one EC2 instance.
+- **Error**: Upon refreshing, an error might appear if the second private EC2 instance isn't correctly deployed, as shown below.
+
+
+
+## Conclusion
+
+This project illustrates the setup of an AWS VPC with public and private subnets, load balancing, Bastion host access, and auto-scaling. The load balancer ensures high availability by distributing traffic across the EC2 instances in private subnets while remaining publicly accessible.
+
